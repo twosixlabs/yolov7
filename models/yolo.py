@@ -73,12 +73,11 @@ class Detect(nn.Module):
             out = torch.cat(z, 1)
         else:
             out = (torch.cat(z, 1), x)
-
         return out
 
     @staticmethod
     def _make_grid(nx=20, ny=20):
-        yv, xv = torch.meshgrid([torch.arange(ny), torch.arange(nx)])
+        yv, xv = torch.meshgrid([torch.arange(ny), torch.arange(nx)], indexing = "ij")
         return torch.stack((xv, yv), 2).view((1, 1, ny, nx, 2)).float()
 
     def convert(self, z):
@@ -691,7 +690,6 @@ class Model(nn.Module):
     #             print('%10.3g' % (m.w.detach().sigmoid() * 2))  # shortcut weights
 
     def fuse(self):  # fuse model Conv2d() + BatchNorm2d() layers
-        print('Fusing layers... ')
         for m in self.model.modules():
             if isinstance(m, RepConv):
                 #print(f" fuse_repvgg_block")
